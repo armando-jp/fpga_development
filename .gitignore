@@ -75,7 +75,7 @@ xvlog.*
 
 ## other files
 .DS_Store
-.Xpr
+.xpr
 ._projects
 ._sim
 ._rtl
