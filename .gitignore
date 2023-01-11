@@ -53,6 +53,7 @@ vivado.sim/
 
 ###### for Xilinx Vivado|ISE
 .Xil/
+._.Xil/
 .cache/
 fsm_encoding.os
 tab_*/
@@ -74,3 +75,4 @@ xvlog.*
 
 ## other files
 .DS_Store
+.Xpr
