@@ -9,7 +9,7 @@
 // Project Name: Square Wave Generator
 // Target Devices: XC7A100T-1CSG324C
 // Tool Versions: 
-// Description: Programmable square wave generator, capable of max 200ms square wave. 
+// Description: Programmable square wave generator, capable of a square wave with a minimum period of 200ns (5MHz). 
 //              Controlled by 2 sets of 4-bit inputs, m and n respectively. 
 //              High = m*100ns, Low = n*100ns. Assumes system clock period of 10ns
 // 
@@ -23,8 +23,8 @@
 
 
 module sqr_wav_gen
-    #(parameter SQR_STATE_MS=100, // 100ms sqr high/low time
-                CLK_MS=10 // system clk period
+    #(parameter SQR_STATE_NS=100, // 100ns sqr high/low time
+                CLK_NS=10 // system clk period
      ) 
     (
     input logic clk,
@@ -34,34 +34,34 @@ module sqr_wav_gen
     );
     
     // decleration
-    logic [7:0] ms_reg;
-    logic [7:0] ms_next;
+    logic [7:0] ns_reg;
+    logic [7:0] ns_next;
     logic sqr_reg;
     logic sqr_next;
     
     // register
     always_ff @(posedge clk)
     begin
-        ms_reg <= ms_next;
+        ns_reg <= ns_next;
         sqr_reg <= sqr_next;
     end
     
     // next-state logic
     // if the square state is changing, start the counter over. otherwise, keep incrementing the counter.
-    assign ms_next = (sqr_reg != sqr_next) ? 8'b0 : ms_reg + 1;
+    assign ns_next = (sqr_reg != sqr_next) ? 8'b0 : ns_reg + 1;
     
     always_comb
-        if (!high_m) // if high time is 0ms, keep output low.
+        if (!high_m) // if high time is 0ns, keep output low.
             sqr_next = 0;
-        else if (!low_n) // if low time is 0ms, keep output high.
+        else if (!low_n) // if low time is 0ns, keep output high.
             sqr_next = 1;
         else if (!sqr_reg) // if output is low, check if the counter has surpassed the set low time and toggle, otherwise, keep current state. 
-            if (ms_reg*CLK_MS >= (low_n*SQR_STATE_MS - CLK_MS))
+            if (ns_reg*CLK_NS >= (low_n*SQR_STATE_NS - CLK_NS))
                 sqr_next = 1;
             else
                 sqr_next = 0;
         else
-            if (ms_reg*CLK_MS >= (high_m*SQR_STATE_MS - CLK_MS))
+            if (ns_reg*CLK_NS >= (high_m*SQR_STATE_NS - CLK_NS))
                 sqr_next = 0;
             else
                 sqr_next = 1;             
